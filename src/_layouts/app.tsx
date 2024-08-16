@@ -8,9 +8,6 @@ export function AppLayout() {
             <div className="flex-1 flex flex-col gap-4 p-8 pt-6">
                 <Outlet />
             </div>
-            <footer className="flex items-center justify-center p-4 bg-gray-800 text-white">
-                ooo
-            </footer>
         </div>
     );
 }
