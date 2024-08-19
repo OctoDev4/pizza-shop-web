@@ -1,17 +1,19 @@
 import { createBrowserRouter } from 'react-router-dom'
 
 
-import { Dashboard } from './pages/app/dashboard/dashboard.tsx'
+import { NotFound } from './pages/404'
+import { Dashboard } from './pages/app/dashboard/dashboard'
+import { Orders } from './pages/app/orders/orders'
 import { SignIn } from './pages/auth/sign-in'
 import { SignUp } from './pages/auth/sign-up'
 import {AppLayout} from "@/_layouts/app.tsx";
 import {AuthLayout} from "@/_layouts/auth.tsx";
-import {Orders} from "@/pages/app/orders/orders.tsx";
 
 export const router = createBrowserRouter([
     {
         path: '/',
         element: <AppLayout />,
+        errorElement: <NotFound />,
         children: [
             {
                 path: '/',
@@ -19,7 +21,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: '/orders',
-                element: <Orders/>
+                element: <Orders />,
             },
         ],
     },
