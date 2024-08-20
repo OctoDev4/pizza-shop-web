@@ -19,12 +19,17 @@ export const router = createBrowserRouter([
                 path: '/',
                 element: <Dashboard />,
             },
+
+
             {
                 path: '/orders',
                 element: <Orders />,
             },
         ],
     },
+
+    // rota auth
+
     {
         path: '/',
         element: <AuthLayout />,
@@ -39,4 +44,6 @@ export const router = createBrowserRouter([
             },
         ],
     },
+
+
 ])
