@@ -55,6 +55,7 @@ export function StoreProfileDialog() {
             queryClient.invalidateQueries({ queryKey: ['profile'] })
             toast.success('Perfil atualizado com sucesso!')
         },
+
         onError: () => {
             toast.error('Falha ao atualizar o perfil, tente novamente')
         },
