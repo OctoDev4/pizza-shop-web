@@ -1,8 +1,11 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { ArrowRight, Search, X } from 'lucide-react'
 import { useState } from 'react'
 
+import { cancelOrder } from '@/api/cancel-order'
+import { GetOrdersResponse } from '@/api/get-orders'
 import { OrderStatus } from '@/components/order-status'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
@@ -22,12 +25,41 @@ interface OrderTableRowProps {
 
 export function OrderTableRow({ order }: OrderTableRowProps) {
     const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+    const queryClient = useQueryClient()
+
+    const { mutateAsync: cancelOrderFn } = useMutation({
+        mutationFn: cancelOrder,
+        async onSuccess(_, { orderId }) {
+            // Obtém os dados em cache relacionados à chave de consulta 'orders'
+            const ordersListCache = queryClient.getQueriesData<GetOrdersResponse>({
+                queryKey: ['orders'],
+            })
+
+            // Itera sobre cada cache encontrado
+            ordersListCache.forEach(([cacheKey, cacheData]) => {
+                if (!cacheData) {
+                    return
+                }
+
+                // Atualiza o cache com o novo status do pedido
+                queryClient.setQueryData<GetOrdersResponse>(cacheKey, {
+                    ...cacheData,
+                    orders: cacheData.orders.map((order) => {
+                        if (order.orderId === orderId) {
+                            return { ...order, status: 'canceled' } // Marca o pedido como cancelado
+                        }
+
+                        return order
+                    }),
+                })
+            })
+        },
+    })
 
     return (
         <TableRow>
             <TableCell>
                 <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-                    {/* Button to trigger the order details dialog */}
                     <DialogTrigger asChild>
                         <Button variant="outline" size="xs">
                             <Search className="h-3 w-3" />
@@ -35,41 +67,43 @@ export function OrderTableRow({ order }: OrderTableRowProps) {
                         </Button>
                     </DialogTrigger>
 
-                    {/* Order details dialog component */}
                     <OrderDetails open={isDetailsOpen} orderId={order.orderId} />
                 </Dialog>
             </TableCell>
             <TableCell className="font-mono text-xs font-medium">
-                {order.orderId} {/* Displays the order ID */}
+                {order.orderId}
             </TableCell>
             <TableCell className="text-muted-foreground">
                 {formatDistanceToNow(order.createdAt, {
                     locale: ptBR,
                     addSuffix: true,
-                })} {/* Displays the time since the order was created */}
+                })}
             </TableCell>
             <TableCell>
-                <OrderStatus status={order.status} /> {/* Displays the status of the order */}
+                <OrderStatus status={order.status} />
             </TableCell>
-            <TableCell className="font-medium">
-                {order.customerName} {/* Displays the customer's name */}
-            </TableCell>
+            <TableCell className="font-medium">{order.customerName}</TableCell>
             <TableCell className="font-medium">
                 {(order.total / 100).toLocaleString('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
-                })} {/* Displays the total amount of the order in BRL currency */}
+                })}
             </TableCell>
             <TableCell>
                 <Button variant="outline" size="xs">
                     <ArrowRight className="mr-2 h-3 w-3" />
-                    Aprovar {/* Button to approve the order */}
+                    Aprovar
                 </Button>
             </TableCell>
             <TableCell>
-                <Button variant="ghost" size="xs">
+                <Button
+                    disabled={!['pending', 'processing'].includes(order.status)}
+                    onClick={() => cancelOrderFn({ orderId: order.orderId })}
+                    variant="ghost"
+                    size="xs"
+                >
                     <X className="mr-2 h-3 w-3" />
-                    Cancelar {/* Button to cancel the order */}
+                    Cancelar
                 </Button>
             </TableCell>
         </TableRow>
