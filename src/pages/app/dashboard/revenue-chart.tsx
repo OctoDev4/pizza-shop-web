@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { DateRangePicker } from "@/components/ui/date-ranger-picker.tsx";
+import {Loader2} from "lucide-react";
 
 export function RevenueChart() {
     // Estado para controlar o intervalo de datas selecionado
@@ -69,7 +70,7 @@ export function RevenueChart() {
             </CardHeader>
             <CardContent>
                 {/* Renderiza o gráfico se houver dados disponíveis */}
-                {chartData && (
+                {chartData ? (
                     <ResponsiveContainer width="100%" height={240}>
                         <LineChart data={chartData} style={{ fontSize: 12 }}>
                             {/* Eixo X do gráfico */}
@@ -98,14 +99,21 @@ export function RevenueChart() {
                             <CartesianGrid vertical={false} className="stroke-muted" />
                             {/* Linha do gráfico */}
                             <Line
-                                stroke={colors.violet[500]} // Cor da linha
+                                stroke={colors.orange[500]} // Cor da linha
                                 type="linear" // Tipo de linha
                                 strokeWidth={2} // Largura da linha
                                 dataKey="receipt" // Chave dos dados para a linha
                             />
                         </LineChart>
                     </ResponsiveContainer>
-                )}
+                )
+                    :
+                    (
+                        <div className='flex h-[240px] w-full items-center justify-center'>
+                            <Loader2 className='h-8 w-8 text-muted-foreground animate-spin'/>
+                        </div>
+                    )
+                }
             </CardContent>
         </Card>
     );

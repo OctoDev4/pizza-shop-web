@@ -6,17 +6,17 @@ import {ArrowRight, Search, X} from 'lucide-react'
 import {useState} from 'react'
 
 // Importa funções de API e componentes personalizados
-import {approveOrder} from '@/api/approve-order'
-import {cancelOrder} from '@/api/cancel-order'
-import {deliverOrder} from '@/api/deliver-order'
-import {dispatchOrder} from '@/api/dispatch-order'
-import {GetOrdersResponse} from '@/api/get-orders'
-import {OrderStatus} from '@/components/order-status'
-import {Button} from '@/components/ui/button'
-import {Dialog, DialogTrigger} from '@/components/ui/dialog'
-import {TableCell, TableRow} from '@/components/ui/table'
+import {approveOrder} from '@/api/approve-order.ts'
+import {cancelOrder} from '@/api/cancel-order.ts'
+import {deliverOrder} from '@/api/deliver-order.ts'
+import {dispatchOrder} from '@/api/dispatch-order.ts'
+import {GetOrdersResponse} from '@/api/get-orders.ts'
+import {OrderStatus} from '@/components/order-status.tsx'
+import {Button} from '@/components/ui/button.tsx'
+import {Dialog, DialogTrigger} from '@/components/ui/dialog.tsx'
+import {TableCell, TableRow} from '@/components/ui/table.tsx'
 
-import {OrderDetails} from './order-details'
+import {OrderDetails} from './order-details.tsx'
 
 // Define as propriedades esperadas para o componente OrderTableRow
 interface OrderTableRowProps {
@@ -116,7 +116,7 @@ context: Este parâmetro é opcional e pode ser usado para armazenar e acessar i
             <TableCell>
                 <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
                     <DialogTrigger asChild>
-                        <Button variant="outline" size="xs">
+                        <Button variant="outline" size="sm">
                             <Search className="h-3 w-3"/>
                             <span className="sr-only">Detalhes do pedido</span>
                         </Button>
@@ -149,7 +149,7 @@ context: Este parâmetro é opcional e pode ser usado para armazenar e acessar i
                     <Button
                         variant="outline"
                         disabled={isApprovingOrder}
-                        size="xs"
+                        size="sm"
                         onClick={() => approveOrderFn({orderId: order.orderId})}
                     >
                         <ArrowRight className="mr-2 h-3 w-3"/>
@@ -161,7 +161,7 @@ context: Este parâmetro é opcional e pode ser usado para armazenar e acessar i
                     <Button
                         variant="outline"
                         disabled={isDispatchingOrder}
-                        size="xs"
+                        size="sm"
                         onClick={() => dispatchOrderFn({orderId: order.orderId})}
                     >
                         <ArrowRight className="mr-2 h-3 w-3"/>
@@ -173,7 +173,7 @@ context: Este parâmetro é opcional e pode ser usado para armazenar e acessar i
                     <Button
                         variant="outline"
                         disabled={isDeliveringOrder}
-                        size="xs"
+                        size="sm"
                         onClick={() => deliverOrderFn({orderId: order.orderId})}
                     >
                         <ArrowRight className="mr-2 h-3 w-3"/>
@@ -189,7 +189,7 @@ context: Este parâmetro é opcional e pode ser usado para armazenar e acessar i
                     }
                     onClick={() => cancelOrderFn({orderId: order.orderId})}
                     variant="ghost"
-                    size="xs"
+                    size="sm"
                 >
                     <X className="mr-2 h-3 w-3"/>
                     Cancelar

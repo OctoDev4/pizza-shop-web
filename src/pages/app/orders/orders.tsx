@@ -1,4 +1,4 @@
- import { useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
 import { useSearchParams } from 'react-router-dom'
 import { z } from 'zod'
@@ -12,29 +12,32 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
-import {OrderTableFilters} from "@/components/order-table-filters.tsx";
-import {OrderTableRow} from "@/components/order-table-row.tsx";
 
-
-
+import { OrderTableFilters } from './order-table-filters'
+import { OrderTableRow } from './order-table-row'
+import { OrderTableSkeleton } from './order-table-skeleton'
 
 export function Orders() {
     const [searchParams, setSearchParams] = useSearchParams()
 
-
     const orderId = searchParams.get('orderId')
     const customerName = searchParams.get('customerName')
     const status = searchParams.get('status')
-
 
     const pageIndex = z.coerce
         .number()
         .transform((page) => page - 1)
         .parse(searchParams.get('page') ?? '1')
 
-    const { data: result } = useQuery({
-        queryKey: ['orders', pageIndex,orderId,customerName,status],
-        queryFn: () => getOrders({ pageIndex:pageIndex,orderId,customerName, status:status === 'all'  ? null : status}),
+    const { data: result, isLoading: isLoadingOrders } = useQuery({
+        queryKey: ['orders', pageIndex, orderId, customerName, status],
+        queryFn: () =>
+            getOrders({
+                pageIndex,
+                orderId,
+                customerName,
+                status: status === 'all' ? null : status,
+            }),
     })
 
     function handlePaginate(pageIndex: number) {
@@ -76,6 +79,7 @@ export function Orders() {
                             </TableBody>
                         </Table>
                     </div>
+                    {isLoadingOrders && <OrderTableSkeleton />}
 
                     {result && (
                         <Pagination

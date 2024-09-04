@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+
+
 import { OrderStatus } from '@/components/order-status'
 import {
     DialogContent,
@@ -17,7 +19,9 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
-import { getOrderDetails } from "@/api/get-orders-details.ts"
+
+import { OrderDetailsSkeleton } from './order-details-skeleton'
+import {getOrderDetails} from "@/api/get-orders-details.ts";
 
 export interface OrderDetailsProps {
     orderId: string
@@ -25,7 +29,6 @@ export interface OrderDetailsProps {
 }
 
 export function OrderDetails({ orderId, open }: OrderDetailsProps) {
-    // Fetches the order details when the dialog is open
     const { data: order } = useQuery({
         queryKey: ['order', orderId],
         queryFn: () => getOrderDetails({ orderId }),
@@ -35,45 +38,49 @@ export function OrderDetails({ orderId, open }: OrderDetailsProps) {
     return (
         <DialogContent>
             <DialogHeader>
-                <DialogTitle>Pedido: {orderId}</DialogTitle> {/* Displays the order ID in the dialog title */}
-                <DialogDescription>Detalhes do pedido</DialogDescription> {/* Provides a description of the dialog */}
+                <DialogTitle>Pedido: {orderId}</DialogTitle>
+                <DialogDescription>Detalhes do pedido</DialogDescription>
             </DialogHeader>
 
-            {order && (
+            {order ? (
                 <div className="space-y-6">
                     <Table>
                         <TableBody>
                             <TableRow>
                                 <TableCell className="text-muted-foreground">Status</TableCell>
                                 <TableCell className="flex justify-end">
-                                    <OrderStatus status={order.status} /> {/* Displays the order status */}
+                                    <OrderStatus status={order.status} />
                                 </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell className="text-muted-foreground">Cliente</TableCell>
                                 <TableCell className="flex justify-end">
-                                    {order.customer.name} {/* Displays the customer's name */}
+                                    {order.customer.name}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
-                                <TableCell className="text-muted-foreground">Telefone</TableCell>
+                                <TableCell className="text-muted-foreground">
+                                    Telefone
+                                </TableCell>
                                 <TableCell className="flex justify-end">
-                                    {order.customer.phone ?? 'Não informado'} {/* Displays the customer's phone or a placeholder */}
+                                    {order.customer.phone ?? 'Não informado'}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell className="text-muted-foreground">E-mail</TableCell>
                                 <TableCell className="flex justify-end">
-                                    {order.customer.email} {/* Displays the customer's email */}
+                                    {order.customer.email}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
-                                <TableCell className="text-muted-foreground">Realizado há</TableCell>
+                                <TableCell className="text-muted-foreground">
+                                    Realizado há
+                                </TableCell>
                                 <TableCell className="flex justify-end">
                                     {formatDistanceToNow(order.createdAt, {
                                         locale: ptBR,
                                         addSuffix: true,
-                                    })} {/* Displays the time since the order was created */}
+                                    })}
                                 </TableCell>
                             </TableRow>
                         </TableBody>
@@ -97,7 +104,7 @@ export function OrderDetails({ orderId, open }: OrderDetailsProps) {
                                         {(item.priceInCents / 100).toLocaleString('pt-BR', {
                                             style: 'currency',
                                             currency: 'BRL',
-                                        })} {/* Displays the price of the product */}
+                                        })}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         {((item.priceInCents * item.quantity) / 100).toLocaleString(
@@ -106,7 +113,7 @@ export function OrderDetails({ orderId, open }: OrderDetailsProps) {
                                                 style: 'currency',
                                                 currency: 'BRL',
                                             },
-                                        )} {/* Displays the subtotal for the item */}
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -118,12 +125,14 @@ export function OrderDetails({ orderId, open }: OrderDetailsProps) {
                                     {(order.totalInCents / 100).toLocaleString('pt-BR', {
                                         style: 'currency',
                                         currency: 'BRL',
-                                    })} {/* Displays the total amount of the order */}
+                                    })}
                                 </TableCell>
                             </TableRow>
                         </TableFooter>
                     </Table>
                 </div>
+            ) : (
+                <OrderDetailsSkeleton />
             )}
         </DialogContent>
     )
